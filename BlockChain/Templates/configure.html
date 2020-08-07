@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BlockChain</title>
+
+    <link rel="stylesheet" href="/static/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/vendor/DataTables/css/datatables.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/custom.css">
+
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark bg-dark fixed-top">
+        <div class="container">
+            <a href="#" class="navbar-brand">BlockChain Frontend</a>
+
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/configure">Configure</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Add Nodes -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class="card-body">
+                    <h4 class="card-title">
+                        Add Blockchain Nodes
+                    </h4>
+                    <p class="card-text">
+                        Enter a list of blockchain node URLs separated by comma and click on "Add" button
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="container alert alert-secondary">
+        <form id="node-form">
+            <div class="row">
+                <label class="col-sm-2">Node URL:</label>
+                <div class="col-sm-10">
+                    <input type="text" name="nodes" id="nodes" rows="2" class="form-control">
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <input type="button" id="add_node_button" class="btn btn-primary btn-lg" value="Add Node">
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <hr>
+
+    <!-- List of Nodes -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        This node can retrieve Blockchain data from the following nodes:
+                    </h4>
+                </div>
+            </div>
+            <div class="col-lg-12" id="list_nodes">
+
+            </div>
+        </div>
+    </div>
+
+<script src="/static/vendor/jquery/jquery.min.js"></script>
+<script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/static/vendor/DataTables/js/datatables.min.js"></script>
+<script src="/static/vendor/DataTables/js/ellipsis.js"></script>
+<script>
+    $(function() {
+        $('#add_node_button').click(function() {
+        $.ajax({
+                url: '/nodes/register',
+                type: 'POST',
+                dataType: 'json',
+                data: $('#node-form').serialize(),
+                success: function(response) {
+                    document.getElementById('nodes').value = '';
+                    window.location.reload();
+                },
+                error: function(error) {
+                    console.log(error);
+                },
+            });
+        });
+        $.ajax({
+                url: '/nodes/get',
+                type: 'GET',
+                success: function(response) {
+
+                    for(i=0; i < response['nodes'].length; i++){
+                        node = "<li><a href=http://"+ response['nodes'][i] +"> " + response['nodes'][i] +"</a></li>"
+                        document.getElementById('list_nodes').innerHTML += node;
+                    }
+                },
+                error: function(error) {
+                    console.log(error);
+                },
+            });
+        });
+
+
+</script>
+
+</body>
+</html>
